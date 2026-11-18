@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Risque de décrochage scolaire par région – tableau de bord</title>
+<style>
+:root{--bg:#f4f6f9;--cd:#fff;--tx:#1d2733;--mu:#667085;--bd:#dfe4ea;--g:#2a9d8f;--y:#e9c46a;--r:#c0392b;--ac:#1f4e79;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151b;--cd:#1a212a;--tx:#e8edf3;--mu:#9aa6b6;--bd:#2b3441;--ac:#7fb3e6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11151b;--cd:#1a212a;--tx:#e8edf3;--mu:#9aa6b6;--bd:#2b3441;--ac:#7fb3e6;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:1180px;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,"Segoe UI",Arial,sans-serif;padding:16px}
+h1{font-size:22px;margin:0}h3{font-size:14px;margin:0 0 10px}small,.mu{color:var(--mu)}p{margin:8px 0}
+.ctl,.kpi,.row{display:grid;gap:14px}
+.ctl{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;align-items:end;margin-top:14px}
+.ctl label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:4px}
+select,button,input{font:inherit;color:var(--tx);background:var(--cd);border:1px solid var(--bd);border-radius:6px;padding:5px}
+input[type=range]{padding:0;border:0;width:100%}
+button{cursor:pointer;background:var(--ac);color:#fff;border:0;padding:8px}
+.kpi{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:14px}
+.k{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px}.k b{font-size:26px;display:block;line-height:1.2}
+.sec{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:34px 0 12px;font-size:18px}
+.sec span{background:var(--ac);color:#fff;border-radius:50%;width:26px;height:26px;display:inline-grid;place-items:center;font-size:13px}
+.sec small{font-size:13px;font-weight:400;flex-basis:100%;margin-left:36px}
+.row{grid-template-columns:1fr}
+@media(min-width:900px){.r1{grid-template-columns:repeat(3,1fr)}.r2{grid-template-columns:3fr 2fr}.r3{grid-template-columns:2fr 3fr}}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:16px;min-width:0}
+svg{width:100%;height:auto;display:block}svg text{fill:var(--tx);font-size:10px}.t{cursor:pointer}
+.fr{display:grid;grid-template-columns:112px 1fr 52px;gap:10px;align-items:center;margin:9px 0}.fr>span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.tk{position:relative;height:16px;background:var(--bd);border-radius:8px}.bar{display:block;height:100%;border-radius:8px}
+.th{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--tx);opacity:.7}
+.tk0{position:relative;height:16px}.tk0 small{position:absolute;transform:translateX(-50%);font-size:11px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.pill{display:inline-block;padding:2px 10px;border-radius:10px;color:#111;font-size:12px;font-weight:600}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}.ba div{background:var(--bg);border-radius:10px;padding:12px}.ba b{display:block;font-size:26px;line-height:1.2}
+.call{background:var(--bg);border-left:4px solid var(--ac);border-radius:6px;padding:10px 12px}
+.st{display:flex;gap:12px;margin:0 0 18px}.st>b{flex:none;width:28px;height:28px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center}
+.ch{display:inline-block;margin:3px 4px 3px 0;padding:2px 10px;border-radius:10px;border:2px solid;font-size:12px;font-weight:600}
+details{margin-top:28px;background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;color:var(--mu);font-size:13px}summary{cursor:pointer;color:var(--tx);font-weight:600}
+details li{margin:6px 0}
+</style></head><body>
+<h1>Risque de décrochage scolaire par région</h1>
+<div class="mu">Burkina Faso · 13 régions · 2016–2025 · base : Classeur1.xlsx · prévision 2026</div>
+<section class="ctl">
+<label>Année : <b id="yl"></b><input id="y" type="range" min="0" max="9" value="9"></label>
+<button id="pl">▶ Lecture</button>
+<label>Indicateur<select id="m"><option value="s">Score de risque</option><option value="d">Déperdition</option><option value="e">Écoles (2016 = 100)</option></select></label>
+<label>Modèle<select id="mod"></select></label>
+<label>Seuil d’alerte : <b id="tal"></b><input id="ta" type="range" min="0.3" max="0.9" step="0.05" value="0.5"></label>
+<label>Vigilance : <b id="tvl"></b><input id="tv" type="range" min="0.1" max="0.5" step="0.05" value="0.35"></label>
+</section>
+<section class="kpi" id="kpi"></section>
+
+<h2 class="sec"><span>1</span>Où le risque est-il le plus fort ?<small>Faites défiler les années, puis cliquez sur une région pour la suivre dans tout le tableau de bord.</small></h2>
+<div class="row r1">
+<div class="card"><h3>Carte schématique <small>(positions approximatives)</small></h3><svg id="map" viewBox="0 0 300 262"></svg></div>
+<div class="card"><h3 id="rt"></h3><svg id="rk" viewBox="0 0 320 290"></svg></div>
+<div class="card"><h3 id="tt"></h3><svg id="tr" viewBox="0 0 320 210"></svg></div>
+</div>
+
+<h2 class="sec"><span>2</span>Quelles régions surveiller en 2026 ?<small>Probabilité d’être en risque élevé l’an prochain, et baisse du score nécessaire pour sortir de l’alerte.</small></h2>
+<div class="row r2">
+<div class="card"><h3>Probabilité de risque élevé en 2026</h3><div id="fc"></div>
+<div class="lg"><span><i style="background:var(--r)"></i>Alerte</span><span><i style="background:var(--y)"></i>Vigilance</span><span><i style="background:var(--g)"></i>Normal</span><span>Traits pointillés : seuils réglables</span></div></div>
+<div class="card"><h3>Effort pour sortir de l’alerte</h3><div id="ef"></div></div>
+</div>
+
+<h2 class="sec"><span>3</span>Que décider ?<small>Testez l’effet d’une baisse du score sur la région choisie, puis lisez les actions proposées.</small></h2>
+<div class="row r3">
+<div class="card" id="sim"></div>
+<div class="card" id="msg"></div>
+</div>
+
+<details><summary>Sources, méthode et limites</summary><ul>
+<li>Données : Classeur1.xlsx (panel de 13 régions sur 10 ans).</li>
+<li>Contexte : fermetures d’écoles, UNICEF, 21 mars 2023, d’après le rapport mensuel ST-ESU du ministère de l’Éducation.</li>
+<li>Méthode : score de risque (déperdition de cohorte et indice composite), trois classes par terciles, modèle ordinal estimé sur l’année précédente.</li>
+<li>Limites : risque inféré à partir d’indicateurs régionaux, non observé élève par élève ; le simulateur donne un ordre de grandeur, pas une garantie.</li></ul></details>
+
+<script>
+const D={"annees":[2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"seuils":[-0.515,0.2],"lien_ref":"probit","lien_alt":"logit","b_ref":2.7139,"z_ref":0.9159,"b_alt":4.8629,"z_alt":1.5275,"sd_score":0.9821,"regions":[{"n":"SAHEL","s":[1.98,1.48,1.51,2.37,1.93,2.67,2.86,2.92,1.43,1.97],"d":[0.71,0.61,0.64,0.48,0.53,0.69,0.7,0.74,0.82,0.77],"e":[987,1013,1037,520,421,242,161,100,170,187],"c":"EEEEEEEEEE","c25":"E","pr":1,"pa":0.999,"pf":0.938,"er":4.909,"ea":9.063},{"n":"CENTRE-NORD","s":[0.39,0.42,0.25,0.59,1.11,0.68,1.05,1.93,1.89,1.61],"d":[0.5,0.51,0.51,0.45,0.44,0.5,0.48,0.48,0.63,0.66],"e":[1228,1315,1375,1375,1079,1180,1171,822,801,868],"c":"EEEEEEEEEE","c25":"E","pr":0.996,"pa":0.994,"pf":0.486,"er":3.5789,"ea":6.5626},{"n":"EST","s":[0.72,0.47,0.11,0.72,0,0.48,0.88,1.3,1.43,1.56],"d":[0.44,0.51,0.45,0.47,0.37,0.39,0.3,0.31,0.61,0.65],"e":[1180,1229,1267,1135,988,878,582,406,521,516],"c":"EEMEMEEEEE","c25":"E","pr":0.999,"pa":0.996,"pf":0.788,"er":3.9297,"ea":7.1129},{"n":"NORD","s":[0.04,-0.22,-0.12,0.41,0.6,0.76,0.84,1.65,1.38,0.98],"d":[0.45,0.48,0.46,0.45,0.49,0.47,0.49,0.57,0.66,0.67],"e":[1509,1595,1654,1591,1566,1622,1523,1280,1462,1546],"c":"MMMEEEEEEE","c25":"E","pr":0.953,"pa":0.958,"pf":0.756,"er":2.5876,"ea":4.6428},{"n":"BOUCLE DU MOUHOUN","s":[0.12,-0.39,-0.02,-0.05,0.26,-0.12,0.2,1.5,0.68,0.53],"d":[0.39,0.35,0.38,0.35,0.35,0.33,0.34,0.31,0.54,0.6],"e":[1281,1340,1382,1438,1260,1373,1111,658,819,954],"c":"MMMMEMMEEE","c25":"E","pr":0.436,"pa":0.474,"pf":0.744,"er":0.7549,"ea":1.4219},{"n":"SUD-OUEST","s":[0.13,0.01,0.3,0.23,0.01,0.19,-0.29,-0.46,-0.13,-0.37],"d":[0.48,0.45,0.47,0.42,0.44,0.42,0.39,0.4,0.5,0.51],"e":[846,860,858,861,863,906,846,826,858,877],"c":"MMEEMMMMMM","c25":"M","pr":0.017,"pa":0.03,"pf":0.126,"er":-1.2156,"ea":-1.9562},{"n":"CENTRE-EST","s":[-0.49,-0.81,-0.66,-0.77,-0.71,-0.44,0.09,0.43,0.39,0.19],"d":[0.39,0.36,0.38,0.29,0.31,0.34,0.43,0.42,0.51,0.54],"e":[1164,1192,1217,1193,1209,1255,1289,1098,1109,1143],"c":"MFFFFMMEEM","c25":"M","pr":0.355,"pa":0.359,"pf":0.564,"er":0.5436,"ea":0.9465},{"n":"CASCADES","s":[-0.58,-0.28,-0.38,0.11,-0.02,-0.45,-0.68,-0.74,-0.13,-0.22],"d":[0.37,0.45,0.37,0.39,0.39,0.35,0.29,0.31,0.43,0.54],"e":[621,646,658,673,686,714,674,624,593,705],"c":"FMMMMMFFMM","c25":"M","pr":0.185,"pa":0.2,"pf":0.242,"er":0.0206,"ea":0.1436},{"n":"PLATEAU CENTRAL","s":[-0.11,-0.62,-0.52,-0.23,-0.68,-0.47,-0.49,-0.27,-0.23,-0.36],"d":[0.41,0.39,0.4,0.37,0.38,0.34,0.4,0.43,0.47,0.46],"e":[899,955,967,969,1009,1022,1051,1093,1067,1086],"c":"MFFMFMMMMM","c25":"M","pr":0.037,"pa":0.05,"pf":0.146,"er":-0.8753,"ea":-1.4256},{"n":"HAUTS-BASSINS","s":[0.1,-0.55,-0.41,-0.37,-0.49,-0.52,-1,-0.5,-0.66,-0.77],"d":[0.44,0.38,0.39,0.38,0.41,0.34,0.31,0.29,0.36,0.38],"e":[1353,1430,1538,1610,1670,1725,1807,1593,1694,1722],"c":"MFMMMFFMFF","c25":"F","pr":0.002,"pa":0.006,"pf":0.004,"er":-2.0346,"ea":-3.6558},{"n":"CENTRE-OUEST","s":[-0.61,-0.63,-0.79,-0.46,-1.1,-0.89,-1.31,-0.74,-1.17,-0.9],"d":[0.35,0.4,0.31,0.33,0.24,0.25,0.2,0.25,0.28,0.34],"e":[1257,1287,1283,1326,1348,1370,1381,1337,1421,1479],"c":"FFFMFFFFFF","c25":"F","pr":0,"pa":0.001,"pf":0.014,"er":-2.8479,"ea":-5.044},{"n":"CENTRE-SUD","s":[-1.11,-1.08,-1.24,-0.69,-1.42,-0.67,-1.41,-0.93,-1.1,-1.27],"d":[0.24,0.3,0.2,0.24,0.19,0.26,0.23,0.29,0.32,0.34],"e":[642,651,670,706,734,751,761,766,776,796],"c":"FFFFFFFFFF","c25":"F","pr":0,"pa":0,"pf":0.002,"er":-3.71,"ea":-6.4387},{"n":"CENTRE","s":[-0.87,-1.16,-0.8,-0.78,-1.04,-1,-1.41,-1.69,-1.92,-1.89],"d":[0.34,0.32,0.33,0.31,0.32,0.28,0.28,0.25,0.27,0.3],"e":[1688,1817,1850,1948,2030,2039,2070,2177,2267,2397],"c":"FFFFFFFFFF","c25":"F","pr":0,"pa":0,"pf":0,"er":-5.1937,"ea":-9.2664}]};
+const R=D.regions,Y=D.annees,POS={"SAHEL":[2,0],"BOUCLE DU MOUHOUN":[0,1],"NORD":[1,1],"CENTRE-NORD":[2,1],"EST":[3,1],"HAUTS-BASSINS":[0,2],"CENTRE-OUEST":[1,2],"PLATEAU CENTRAL":[2,2],"CENTRE-EST":[3,2],"CASCADES":[0,3],"SUD-OUEST":[1,3],"CENTRE":[2,3],"CENTRE-SUD":[2,4]};
+const CL={F:"Faible",M:"Moyen",E:"Élevé"},CC={F:"var(--g)",M:"var(--y)",E:"var(--r)"};
+const $=i=>document.getElementById(i),st={y:9,m:"s",mod:"pr",sel:0,ta:.5,tv:.35,p:null};
+const sh=n=>n.replace("BOUCLE DU MOUHOUN","B. MOUHOUN").replace("PLATEAU CENTRAL","PL. CENTRAL").replace("HAUTS-BASSINS","H.-BASSINS").replace("CENTRE-","C.-");
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x))};
+const F=(l,x)=>l=="probit"?.5*(1+erf(x/Math.SQRT2)):1/(1+Math.exp(-x));
+const Fi=(l,p)=>{if(l!="probit")return Math.log(p/(1-p));let a=-8,b=8;for(let i=0;i<60;i++){const m=(a+b)/2;F(l,m)<p?a=m:b=m}return(a+b)/2};
+const col=t=>{t=Math.max(0,Math.min(1,t));const a=t<.5?[[42,157,143],[233,196,106],t*2]:[[233,196,106],[192,57,43],(t-.5)*2];return"rgb("+a[0].map((v,i)=>Math.round(v+(a[1][i]-v)*a[2])).join(",")+")"};
+const val=(r,i)=>st.m=="e"?r.e[i]/r.e[0]*100:r[st.m][i];
+const nrm=v=>st.m=="s"?(v+2)/5:st.m=="d"?(v-.25)/.6:1-v/100;
+const fm=v=>st.m=="s"?v.toFixed(2):st.m=="d"?(v*100).toFixed(0)+" %":v.toFixed(0);
+const mp=()=>st.mod=="pa"?{l:D.lien_alt,b:D.b_alt,z:D.z_alt,k:"ea"}:{l:D.lien_ref,b:D.b_ref,z:D.z_ref,k:"er"};
+const P=(r,d)=>{if(st.mod=="pf")return r.pf;const q=mp();return 1-F(q.l,q.z-(r[q.k]-q.b*d/D.sd_score))};
+const lv=p=>p>=st.ta?["ALERTE","var(--r)"]:p>=st.tv?["Vigilance","var(--y)"]:["Normal","var(--g)"];
+const need=(r,thr)=>{const q=mp();return Math.max(0,(r[q.k]-q.z+Fi(q.l,1-thr))*D.sd_score/q.b)};
+const thrOf=p=>(p>=st.ta?st.ta:st.tv)-1e-6;
+const chips=(a,c)=>a.length?a.map(n=>`<span class="ch" style="border-color:${c}">${n}</span>`).join(""):"<span class='mu'>aucune</span>";
+function draw(){
+const i=st.y,r=R[st.sel];$("yl").textContent=Y[i];$("tal").textContent=st.ta;$("tvl").textContent=st.tv;
+const ps=R.map(x=>P(x,0)),na=ps.filter(p=>p>=st.ta).length,nv=ps.filter(p=>p<st.ta&&p>=st.tv).length;
+const ne=R.filter(x=>x.c[i]=="E").length,mean=R.reduce((s,x)=>s+x.s[i],0)/R.length;
+$("kpi").innerHTML=`<div class="k"><small>En alerte en 2026</small><b style="color:var(--r)">${na}</b>régions</div><div class="k"><small>En vigilance</small><b style="color:#b58900">${nv}</b>régions</div><div class="k"><small>En risque élevé en ${Y[i]}</small><b>${ne}/13</b>régions</div><div class="k"><small>Score moyen ${Y[i]}</small><b>${mean.toFixed(2)}</b>0 = moyenne du panel</div>`;
+$("map").innerHTML=R.map((x,j)=>{const [c,l]=POS[x.n],v=val(x,i);return`<g class="t" data-i="${j}" transform="translate(${c*74+2},${l*52+2})"><rect width="70" height="48" rx="6" style="fill:${col(nrm(v))};stroke:${j==st.sel?"var(--tx)":"none"};stroke-width:2.5"/><text x="35" y="20" text-anchor="middle" style="fill:#111;font-weight:600">${sh(x.n)}</text><text x="35" y="36" text-anchor="middle" style="fill:#111">${fm(v)} · ${x.c[i]}</text></g>`}).join("");
+const o=R.map((x,j)=>j).sort((a,b)=>st.m=="e"?val(R[a],i)-val(R[b],i):val(R[b],i)-val(R[a],i)),vs=R.map(x=>val(x,i)),lo=Math.min(0,...vs),hi=Math.max(...vs);
+$("rt").textContent="Classement des régions en "+Y[i];
+$("rk").innerHTML=o.map((j,k)=>{const v=vs[j],w=Math.max(2,(v-lo)/(hi-lo||1)*170);return`<g class="t" data-i="${j}"><text x="0" y="${k*22+14}" style="font-weight:${j==st.sel?700:400}">${sh(R[j].n)}</text><rect x="100" y="${k*22+4}" width="${w}" height="14" rx="3" style="fill:${col(nrm(v))}"/><text x="${104+w}" y="${k*22+15}">${fm(v)}</text></g>`}).join("");
+$("tt").textContent="Trajectoire : "+r.n;
+const X=k=>30+k*30,Yy=v=>180-(v+2)/5.2*160,av=Y.map((y,k)=>R.reduce((s,x)=>s+x.s[k],0)/R.length);
+let g=D.seuils.map(s=>`<line x1="30" x2="300" y1="${Yy(s)}" y2="${Yy(s)}" stroke="var(--mu)" stroke-dasharray="3"/>`).join("");
+g+=`<polyline fill="none" stroke="var(--mu)" stroke-dasharray="2" points="${av.map((v,k)=>X(k)+","+Yy(v)).join(" ")}"/><polyline fill="none" stroke="var(--ac)" stroke-width="2" points="${r.s.map((v,k)=>X(k)+","+Yy(v)).join(" ")}"/>`;
+g+=r.s.map((v,k)=>`<circle cx="${X(k)}" cy="${Yy(v)}" r="${k==i?6:3.5}" style="fill:${CC[r.c[k]]};stroke:${k==i?"var(--tx)":"none"}"/>`).join("")+Y.map((y,k)=>k%3==0||k==i?`<text x="${X(k)}" y="198" text-anchor="middle">${y}</text>`:"").join("")+`<text x="30" y="10">score (pointillé gris : moyenne des 13 régions)</text>`;
+$("tr").innerHTML=g;
+const f=R.map((x,j)=>j).sort((a,b)=>ps[b]-ps[a]);
+$("fc").innerHTML=`<div class="fr"><span></span><div class="tk0"><small style="left:${st.tv*100}%">vigilance</small><small style="left:${st.ta*100}%">alerte</small></div><span></span></div>`+f.map(j=>{const p=ps[j],c=lv(p)[1];return`<div class="fr t" data-i="${j}" style="font-weight:${j==st.sel?700:400}"><span>${sh(R[j].n)}</span><div class="tk"><i class="bar" style="width:${Math.max(1,p*100)}%;background:${c}"></i><b class="th" style="left:${st.tv*100}%"></b><b class="th" style="left:${st.ta*100}%"></b></div><span>${(p*100).toFixed(0)} %</span></div>`}).join("");
+const ef=f.filter(j=>ps[j]>=st.tv),dd=ef.map(j=>need(R[j],thrOf(ps[j]))),mx=Math.max(.01,...dd);
+$("ef").innerHTML=st.mod=="pf"?"<p class='mu'>Calcul disponible avec les modèles ordinaux : choisissez « Référence » ou « Robustesse ».</p>":ef.length?ef.map((j,k)=>`<div class="fr t" data-i="${j}"><span>${sh(R[j].n)}</span><div class="tk"><i class="bar" style="width:${dd[k]/mx*100}%;background:${lv(ps[j])[1]}"></i></div><span>${dd[k]<.005?"≈ 0":"−"+dd[k].toFixed(2)}</span></div>`).join("")+"<p class='mu'>Baisse du score de risque nécessaire pour passer sous le seuil, en points (la moyenne des 13 régions vaut 0).</p>":"<p>Aucune région au-dessus du seuil de vigilance.</p>";
+const p0=P(r,0),[n0,c0]=lv(p0),dl=+$("dl").value,p1=P(r,dl),[n1,c1]=lv(p1),d0=need(r,thrOf(p0));
+$("s1").innerHTML=`<b style="font-size:16px">${r.n}</b> <span class="mu">· classe ${CL[r.c25]} en 2025 · score ${r.s[9].toFixed(2)}</span>`;
+$("dv").textContent=dl.toFixed(2);
+$("pa0").innerHTML=`${(p0*100).toFixed(0)} %<br><span class="pill" style="background:${c0}">${n0}</span>`;
+$("pa1").innerHTML=`${(p1*100).toFixed(0)} %<br><span class="pill" style="background:${c1}">${n1}</span>`;
+$("s2").innerHTML=st.mod=="pf"?"Simulateur disponible avec les modèles ordinaux uniquement.":p0>=st.tv?`Pour passer sous le seuil ${p0>=st.ta?"d’alerte":"de vigilance"}, il faut réduire le score de <b>${d0.toFixed(2)} point</b> : de ${r.s[9].toFixed(2)} à ${(r.s[9]-d0).toFixed(2)}.`:"Cette région est déjà sous le seuil de vigilance.";
+const al=f.filter(j=>ps[j]>=st.ta),vg=f.filter(j=>ps[j]<st.ta&&ps[j]>=st.tv),top=al[0];
+$("msg").innerHTML=`<h3>Actions proposées</h3><div class="st"><b>1</b><div><b>Prioriser</b><br>${chips(al.map(j=>R[j].n),"var(--r)")}<br><span class="mu">Concentrer la continuité éducative et la rétention des élèves.</span></div></div><div class="st"><b>2</b><div><b>Surveiller</b><br>${chips(vg.map(j=>R[j].n),"var(--y)")}<br><span class="mu">Suivi annuel renforcé : les modèles y sont moins sûrs.</span></div></div><div class="st"><b>3</b><div><b>Fixer l’objectif</b><br>${top!==undefined&&st.mod!="pf"?`Pour la région la plus exposée (${R[top].n}), viser une baisse du score d’au moins <b>${need(R[top],thrOf(ps[top])).toFixed(2)} point</b>.`:"Choisir un modèle ordinal pour chiffrer l’objectif."}<br><span class="mu">Le risque dépend surtout du niveau de l’année précédente : agir tôt coûte moins qu’attendre un nouveau choc.</span></div></div>`}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-i]");if(t){st.sel=+t.dataset.i;draw()}});
+$("y").oninput=e=>{st.y=+e.target.value;draw()};$("m").onchange=e=>{st.m=e.target.value;draw()};$("mod").onchange=e=>{st.mod=e.target.value;draw()};
+$("ta").oninput=e=>{st.ta=+e.target.value;draw()};$("tv").oninput=e=>{st.tv=+e.target.value;draw()};
+$("mod").innerHTML=`<option value="pr">Référence (${D.lien_ref})</option><option value="pa">Robustesse (${D.lien_alt})</option><option value="pf">Forêt aléatoire</option>`;
+$("pl").onclick=()=>{if(st.p){clearInterval(st.p);st.p=null;$("pl").textContent="▶ Lecture"}else{$("pl").textContent="⏸ Pause";st.p=setInterval(()=>{st.y=(st.y+1)%10;$("y").value=st.y;draw()},900)}};
+$("sim").innerHTML=`<h3>Simulateur d’effort</h3><div id="s1"></div><div class="ba"><div><small>Aujourd’hui (2026)</small><b id="pa0"></b></div><div><small>Après réduction</small><b id="pa1"></b></div></div><label class="mu">Réduction du score de risque : <b id="dv">0.00</b> point<input id="dl" type="range" min="0" max="2.5" step="0.05" value="0"></label><p class="call" id="s2"></p>`;
+$("dl").oninput=draw;
+draw();
+</script></body></html>
